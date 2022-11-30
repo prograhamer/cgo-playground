@@ -1,24 +1,21 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/prograhamer/heap/internal/clib"
 )
 
 func main() {
-	message := []byte("Hello, world!")
-
-	fmt.Println("message", message)
-
-	reversed, err := clib.Reverse(message)
+	tree, err := clib.NewTree()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("reversed", reversed)
+	numbers := []int{10, 5, 7, 0, 15, 12, 2, 20, 9}
 
-	fmt.Println("message", message)
-	clib.ReverseInPlace(message)
-	fmt.Println("message", message)
+	err = tree.Add(numbers...)
+	if err != nil {
+		panic(err)
+	}
+
+	tree.Walk()
 }
