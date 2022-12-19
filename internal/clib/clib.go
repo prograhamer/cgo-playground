@@ -56,6 +56,18 @@ func NewTree() (*Tree, error) {
 	return &Tree{tree}, nil
 }
 
+func Destroy(tree *Tree) error {
+	_, err := C.HETreeFree(tree.ctree)
+	if err != nil {
+		return fmt.Errorf("HETreeFree: %w", err)
+	}
+	return nil
+}
+
+func (t *Tree) Size() int {
+	return int(t.ctree.size)
+}
+
 func (t *Tree) Add(numbers ...int) error {
 	for _, n := range numbers {
 		_, err := C.HETreeAdd(t.ctree, C.int(n))
@@ -71,5 +83,44 @@ func (t *Tree) Walk() error {
 	if err != nil {
 		return fmt.Errorf("HETreePrint: %w", err)
 	}
+	return nil
+}
+
+func (t *Tree) Sort() ([]int32, error) {
+	res, err := C.HETreeSort(t.ctree)
+	if err != nil {
+		return nil, fmt.Errorf("HETreeSort: %w", err)
+	}
+	defer C.free(unsafe.Pointer(res))
+
+	sorted := make([]int32, t.ctree.size)
+	for i := int32(0); i < int32(t.ctree.size); i++ {
+		sorted[i] = *(*int32)(unsafe.Add(unsafe.Pointer(res), i*4))
+	}
+
+	return sorted, nil
+}
+
+func (t *Tree) Sorted() ([]int32, error) {
+	res := make([]int32, int(t.ctree.size))
+	_, err := C.HETreeSortNoMalloc(t.ctree, (*C.int)(&res[0]), t.ctree.size)
+	if err != nil {
+		return nil, fmt.Errorf("HETreeSortNoMalloc: %w", err)
+	}
+	return res, nil
+}
+
+func (t *Tree) SortWithBuf(buf []int32) error {
+	fmt.Println("cap:", cap(buf), "len:", len(buf))
+	ccap := C.int(cap(buf))
+	cres := &buf[0]
+
+	count, err := C.HETreeSortNoMalloc(t.ctree, (*C.int)(cres), ccap)
+	if err != nil {
+		return fmt.Errorf("HETreeSortNoMalloc: %w", err)
+	}
+
+	fmt.Println("count:", count)
+
 	return nil
 }

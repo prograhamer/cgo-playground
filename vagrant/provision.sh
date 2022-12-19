@@ -6,7 +6,7 @@ apt-get update
 apt-get -y upgrade
 
 # Install build essential and debugger
-apt-get install -y build-essential gdb
+apt-get install -y build-essential gdb valgrind
 
 # Install Go 1.19
 if [[ ! -d /usr/local/go ]]; then

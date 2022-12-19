@@ -17,8 +17,11 @@ typedef struct _he_tree {
 } HETree;
 
 extern HETree *HETreeInit();
+extern int HETreeFree(HETree *);
 extern int HETreeAdd(HETree *, int);
 extern void HETreeWalk(HETree *, void (*f)(int));
 extern void HETreePrint(HETree *);
+extern int *HETreeSort(HETree *);
+extern int HETreeSortNoMalloc(HETree *, int *, int);
 
 #endif
